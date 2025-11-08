@@ -23,8 +23,8 @@ class Settings(BaseSettings):
     # Kiwoom API
     KIWOOM_APP_KEY: str
     KIWOOM_APP_SECRET: str
-    KIWOOM_BASE_URL: str = "https://openapi.koreainvestment.com:9443"
-    KIWOOM_WEBSOCKET_URL: str = "ws://ops.koreainvestment.com:21000"
+    KIWOOM_BASE_URL: str = "https://api.kiwoom.com"  # Fixed: Real trading URL (no port)
+    KIWOOM_WEBSOCKET_URL: str = "wss://openapi.kiwoom.com/ws"
     
     # Database
     DATABASE_URL: str = "sqlite:///./data/kiwoom.db"

@@ -15,6 +15,7 @@ dependencies = [
     "apscheduler>=3.10.4",
     "pytz>=2023.3",
     "alembic>=1.12.1",
+    "websockets>=12.0",
 ]
 
 [tool.hatch.build.targets.wheel]

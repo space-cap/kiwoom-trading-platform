@@ -52,35 +52,64 @@ class KiwoomRestClient(BaseAPIClient):
     async def get_access_token(self) -> str:
         """
         Get OAuth access token
-        
+
         Returns:
             Access token
-        
+
         Raises:
             AuthenticationException: On authentication failure
         """
         logger.info("Requesting access token...")
-        
+
         try:
             response = await self.post(
                 "/oauth2/token",
                 json={
                     "grant_type": "client_credentials",
                     "appkey": self.app_key,
-                    "appsecret": self.app_secret,
+                    "secretkey": self.app_secret,  # Fixed: Changed from 'appsecret' to 'secretkey'
                 }
             )
+
+            # Kiwoom API response format:
+            # {'return_code': 0, 'return_msg': '정상적으로 처리되었습니다',
+            #  'token': 'R22y0dDGXM...', 'token_type': 'Bearer',
+            #  'expires_dt': '20251109235445'}
             
-            access_token = response.get("access_token")
-            expires_in = response.get("expires_in", 86400)  # Default 24 hours
+            return_code = response.get("return_code")
+            if return_code != 0:
+                error_msg = response.get("return_msg", "Unknown error")
+                raise AuthenticationException(f"Token request failed: {error_msg} (code: {return_code})")
+            
+            access_token = response.get("token")  # Kiwoom uses 'token' not 'access_token'
+            expires_dt_str = response.get("expires_dt")  # Format: '20251109235445' (YYYYMMDDHHmmss)
             
             if not access_token:
-                raise AuthenticationException("No access token in response")
+                raise AuthenticationException("No token in response")
+            
+            # Calculate expires_in from expires_dt
+            if expires_dt_str:
+                try:
+                    expires_dt = datetime.strptime(expires_dt_str, "%Y%m%d%H%M%S")
+                    now = datetime.now()
+                    expires_in = int((expires_dt - now).total_seconds())
+                    if expires_in < 0:
+                        expires_in = 86400  # Default to 24 hours if already expired
+                except Exception as e:
+                    logger.warning(f"Failed to parse expires_dt '{expires_dt_str}': {e}")
+                    expires_in = 86400  # Default 24 hours
+            else:
+                expires_in = 86400  # Default 24 hours
             
             # Store token
             token_manager.set_token(access_token, expires_in)
             
-            logger.info(f"Access token acquired (expires in {expires_in}s)")
+            logger.info(
+                f"Access token acquired: "
+                f"expires_at={expires_dt_str if expires_dt_str else 'N/A'}, "
+                f"remaining={expires_in}s, "
+                f"msg={response.get('return_msg', '')}"
+            )
             
             return access_token
             
@@ -163,20 +192,20 @@ class KiwoomRestClient(BaseAPIClient):
             Stock price data
         """
         await self.ensure_authenticated()
-        
+
         logger.debug(f"Fetching stock price for {stock_code}...")
-        
+
         headers = self._get_auth_headers(TR_ID_STOCK_PRICE)
-        
+
         params = {
             "FID_COND_MRKT_DIV_CODE": market_code,
             "FID_INPUT_ISCD": stock_code,
         }
-        
+
         response = await self.get(
             "/uapi/domestic-stock/v1/quotations/inquire-price",
             headers=headers,
             params=params,
         )
-        
+
         return response
