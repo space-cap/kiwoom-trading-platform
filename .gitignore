@@ -1,0 +1,285 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.manifest
+*.spec
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+.virtualenv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Database
+data/
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Token files (security)
+.token
+*.token
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.bak
+*.swp
+*.tmp
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Alembic
+alembic/versions/*.pyc
+
+# Package managers
+poetry.lock
+uv.lock
+Pipfile.lock
+
+# Documentation build
+docs/_build/
+docs/.doctrees/
+site/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# pyenv
+.python-version
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# Backup files
+*~
+*.bak
+*.backup
+*.old
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Local configuration
+local_settings.py
+.local/
+
+# Secrets and credentials (extra safety)
+secrets/
+credentials/
+*.key
+*.pem
+*.cert
+*.crt
+*.p12
+
+# Data files that might contain sensitive info
+*.csv
+*.xlsx
+*.xls
+*.json.local
+
+# Mac specific
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Windows specific
+ehthumbs.db
+ehthumbs_vista.db
+
+# Test outputs
+test-results/
+test-output/
+
+# UV specific
+uv.lock
+
+# Python bytecode
+*.pyc
+__pycache__/
+
+# Environment-specific
+.env.dev
+.env.prod
+!.env.dev.example
+!.env.prod.example
+
+# Temporary test files
+test_*.py.bak
+test_*.py.tmp
+
+# Runtime data
+*.pid
+*.seed
+*.pid.lock
+
+# Docker volumes
+docker-compose.override.yml
+.dockerignore
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# VSCode
+.vscode/*
+!.vscode/settings.json.example
+!.vscode/launch.json.example
+!.vscode/extensions.json.example
+
+# PyCharm
+.idea/*
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
+
+# Coverage reports
+.coverage
+.coverage.*
+htmlcov/
+*.cover
+coverage.xml
+
+# Profiling
+*.prof
+*.lprof
+
+# Distribution / packaging
+*.tar.gz
+*.whl
+*.zip
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# SQLite databases (local development)
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
+
+# Backup files from editors
+*~
+*.swp
+*.swo
+*.swn
+.*.swp
+
+# Local history
+.history/
+
+# Certificates (extra safety)
+*.cer
+*.der
+*.p7b
+*.p7c
+*.pfx
+
+# API response cache (if implemented)
+.cache/
+cache/
+
+# Node modules (if using any JS tools)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Large PDF documentation (optional - remove if needed)
+# docs/*.pdf
