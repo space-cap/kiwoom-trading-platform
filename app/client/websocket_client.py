@@ -192,6 +192,89 @@ class KiwoomWebSocketClient:
         
         return response_data
     
+    async def search_condition(
+        self,
+        seq: str,
+        search_type: str = "0",
+        stex_tp: str = "K",
+        cont_yn: str = "N",
+        next_key: str = ""
+    ) -> Dict[str, Any]:
+        """
+        조건검색 실행 (일반)
+        
+        Args:
+            seq: 조건검색식 일련번호 (CNSRLST에서 조회한 인덱스)
+            search_type: 조회타입 (0: 전체, 1: 추가, 2: 삭제) 기본값 "0"
+            stex_tp: 거래소구분 (K: 코스피/코스닥, 기본값 "K")
+            cont_yn: 연속조회여부 (Y/N) 기본값 "N"
+            next_key: 연속조회키 (연속조회시 사용) 기본값 ""
+        
+        Returns:
+            조건검색 결과
+            {
+                'trnm': 'CNSRREQ',
+                'seq': '4',
+                'cont_yn': 'N',
+                'next_key': '',
+                'return_code': 0,
+                'data': [
+                    {
+                        '9001': 'A005930',  # 종목코드
+                        '302': '삼성전자',   # 종목명
+                        '10': '000075000',  # 현재가
+                        '25': '5',          # 전일대비구분
+                        '11': '-00000100',  # 전일대비
+                        ...
+                    },
+                    ...
+                ]
+            }
+        """
+        # 응답을 저장할 변수
+        response_data = {}
+        response_event = asyncio.Event()
+        
+        # 응답 핸들러
+        async def handle_response(response: Dict[str, Any]):
+            nonlocal response_data
+            response_data = response
+            response_event.set()
+        
+        # 핸들러 등록
+        self.register_handler("CNSRREQ", handle_response)
+        
+        # 연결 확인
+        if not self.connected:
+            await self.connect()
+        
+        # 조건검색 실행 요청
+        request = {
+            "trnm": "CNSRREQ",
+            "seq": seq,
+            "search_type": search_type,
+            "stex_tp": stex_tp,
+            "cont_yn": cont_yn,
+            "next_key": next_key
+        }
+        await self.send_message(request)
+        logger.info(f"Condition search request sent: seq={seq}, type={search_type}")
+        
+        # 응답 대기 (타임아웃 30초 - 검색 시간 고려)
+        try:
+            await asyncio.wait_for(response_event.wait(), timeout=30.0)
+        except asyncio.TimeoutError:
+            logger.error("Timeout waiting for condition search response")
+            raise APIException("Condition search request timeout")
+        
+        # 응답 검증
+        return_code = response_data.get("return_code")
+        if return_code != 0:
+            error_msg = response_data.get("return_msg", "Unknown error")
+            raise APIException(f"Condition search failed: {error_msg}")
+        
+        return response_data
+    
     async def run(self) -> None:
         """WebSocket 클라이언트 실행 (백그라운드)"""
         await self.connect()
