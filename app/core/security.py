@@ -32,6 +32,8 @@ class TokenManager:
         if not self.TOKEN_FILE.exists():
             return
         
+        should_delete = False
+        
         try:
             with self.TOKEN_FILE_LOCK:
                 with open(self.TOKEN_FILE, 'r', encoding='utf-8') as f:
@@ -42,25 +44,29 @@ class TokenManager:
                 
                 if not access_token or not expires_at_str:
                     logger.warning("Invalid token file format")
-                    return
-                
-                # Parse expiration time
-                expires_at = datetime.fromisoformat(expires_at_str)
-                
-                # Check if token is still valid (with 5min buffer)
-                if datetime.now() < expires_at - timedelta(minutes=5):
-                    self._access_token = access_token
-                    self._token_expires_at = expires_at
-                    logger.info(f"Loaded valid token from file (expires at {expires_at})")
+                    should_delete = True
                 else:
-                    logger.info("Token in file has expired")
-                    self._delete_token_file()
+                    # Parse expiration time
+                    expires_at = datetime.fromisoformat(expires_at_str)
+                    
+                    # Check if token is still valid (with 5min buffer)
+                    if datetime.now() < expires_at - timedelta(minutes=5):
+                        self._access_token = access_token
+                        self._token_expires_at = expires_at
+                        logger.info(f"Loaded valid token from file (expires at {expires_at})")
+                    else:
+                        logger.info("Token in file has expired")
+                        should_delete = True
         
         except json.JSONDecodeError:
             logger.error("Failed to parse token file (invalid JSON)")
-            self._delete_token_file()
+            should_delete = True
         except Exception as e:
             logger.error(f"Failed to load token from file: {e}")
+            should_delete = True
+        
+        # Delete token file outside of lock to avoid file handle conflicts
+        if should_delete:
             self._delete_token_file()
     
     def _save_token_to_file(self) -> None:
